@@ -1,35 +1,96 @@
-#%% Load the data
-from sklearn.datasets import fetch_20newsgroups
-cats = None #['alt.atheism', 'sci.space']
-newsgroups = fetch_20newsgroups(data_home='../data', subset="all", categories=cats, remove=('headers', 'footers', 'quotes'), shuffle=True, random_state=42)
-#%% Split the data into train, validate and test sets
+import os
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(newsgroups.data[:1000], newsgroups.target[:1000], test_size=0.3, random_state=42)
-X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state=42)
-#%% Print the shapes of the splits
-print(f"Train shape: {len(X_train)}")
-print(f"Validation shape: {len(X_val)}")
-print(f"Test shape: {len(X_test)}")
-#%% Save the data to csv files
 import pandas as pd
-train_df = pd.DataFrame({'text': X_train, 'target': y_train})
-train_df.to_csv('../data/raw/train.csv', index=False)
-val_df = pd.DataFrame({'text': X_val, 'target': y_val})
-val_df.to_csv('../data/raw/val.csv', index=False)
-test_df = pd.DataFrame({'text': X_test, 'target': y_test})
-test_df.to_csv('../data/raw/test.csv', index=False)
 
-#%% load the data from csv files
-train_df = pd.read_csv('../data/raw/train.csv')
-val_df = pd.read_csv('../data/raw/val.csv')
-test_df = pd.read_csv('../data/raw/test.csv')
-#%% Print the shape of the data
-print(f"Train shape: {train_df.shape}")
-print(f"Validation shape: {val_df.shape}")
-print(f"Test shape: {test_df.shape}")
-#%% Print the first 5 rows of the train data
-print(train_df.head())
-#%% Print the first 5 rows of the validation data
-print(val_df.head())
-#%% Print the first 5 rows of the test data
-print(test_df.head())  
+
+def load_20newsgroups():
+    from sklearn.datasets import fetch_20newsgroups
+
+    newsgroups = fetch_20newsgroups(
+        data_home="../data",
+        subset="all",
+        remove=("headers", "footers", "quotes"),
+        shuffle=True,
+        random_state=42,
+    )
+    data = newsgroups.data
+    target = newsgroups.target
+    target_names = newsgroups.target_names
+    target = [target_names[t] for t in target]
+    return data, target
+
+
+def load_reuters():
+    import nltk
+
+    nltk.download("reuters")
+    from nltk.corpus import reuters
+
+    docs = reuters.fileids()
+    data = [reuters.raw(doc_id) for doc_id in docs]
+    target = [
+        reuters.categories(doc_id)[0] if reuters.categories(doc_id) else "unknown"
+        for doc_id in docs
+    ]
+    return data, target
+
+
+def load_imdb():
+    from datasets import load_dataset
+
+    ds = load_dataset("imdb")
+    label_names = ds["train"].features["label"].names
+    data = ds["train"]["text"] + ds["test"]["text"]
+    target = [label_names[label] for label in ds["train"]["label"]] + [
+        label_names[label] for label in ds["test"]["label"]
+    ]
+    return data, target
+
+
+def load_ag_news():
+    from datasets import load_dataset
+
+    ds = load_dataset("ag_news")
+    label_names = ds["train"].features["label"].names
+    data = ds["train"]["text"] + ds["test"]["text"]
+    target = [label_names[label] for label in ds["train"]["label"]] + [
+        label_names[label] for label in ds["test"]["label"]
+    ]
+    return data, target
+
+
+def execute(dataset="ag_news"):
+    print(f"Loading dataset: {dataset}")
+    loaders = {
+        "20newsgroup": load_20newsgroups,
+        "reuters": load_reuters,
+        "imdb": load_imdb,
+        "ag_news": load_ag_news,
+    }
+    if dataset not in loaders:
+        raise ValueError(f"Dataset {dataset} not supported.")
+    data, target = loaders[dataset]()
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        data, target, test_size=0.3, random_state=42
+    )
+    X_val, X_test, y_val, y_test = train_test_split(
+        X_test, y_test, test_size=0.5, random_state=42
+    )
+
+    out_dir = f"./data/raw/{dataset}"
+    os.makedirs(out_dir, exist_ok=True)
+    pd.DataFrame({"text": X_train, "target": y_train}).to_csv(
+        f"{out_dir}/train.csv", index=False
+    )
+    pd.DataFrame({"text": X_val, "target": y_val}).to_csv(
+        f"{out_dir}/val.csv", index=False
+    )
+    pd.DataFrame({"text": X_test, "target": y_test}).to_csv(
+        f"{out_dir}/test.csv", index=False
+    )
+    print(f"Data saved to {out_dir}/")
+
+
+if __name__ == "__main__":
+    execute()

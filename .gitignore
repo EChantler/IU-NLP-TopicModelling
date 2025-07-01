@@ -67,3 +67,5 @@ models/
 
 # MacOS
 .DS_Store
+checkpoints/
+tfm-checkpoints/
