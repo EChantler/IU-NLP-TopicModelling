@@ -78,7 +78,7 @@ def load_reddit_topics():
     return data, target
 
 
-def execute(dataset="arxiv_classification"):
+def execute(dataset="reddit_topics"):
     print(f"Loading dataset: {dataset}")
     loaders = {
         "20newsgroup": (load_20newsgroups, "news.csv"),
@@ -102,4 +102,6 @@ def execute(dataset="arxiv_classification"):
 
 
 if __name__ == "__main__":
-    execute()
+    execute("reddit_topics")  # Change this to load a different dataset
+    # execute("20newsgroup")
+    # execute("arxiv_classification")

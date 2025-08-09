@@ -8,10 +8,47 @@ from sklearn.metrics import classification_report, accuracy_score
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import RandomizedSearchCV
+import mlflow
+from mlflow.tracking import MlflowClient
+import os
 
-# 1) Load your data, which must include a 'domain' column
-train_df = pd.read_csv('data/processed/train.csv')    # cols: ['text','domain','target',…]
-val_df   = pd.read_csv('data/processed/val.csv')
+# Load data from MLflow artifacts
+client = MlflowClient()
+try:
+    # Get all experiments and search for data_splits artifacts
+    experiments = client.search_experiments()
+    data_run = None
+    
+    for experiment in experiments:
+        runs = client.search_runs(experiment_ids=[experiment.experiment_id], order_by=["start_time DESC"], max_results=10)
+        for run in runs:
+            try:
+                artifacts = client.list_artifacts(run.info.run_id, path="data_splits")
+                if artifacts:  # Found a run with data_splits
+                    data_run = run
+                    print(f"Found data_splits in experiment {experiment.name} (ID: {experiment.experiment_id})")
+                    break
+            except Exception:
+                continue
+        if data_run:
+            break
+    
+    if data_run:
+        print(f"Loading data from MLflow run: {data_run.info.run_id}")
+        # Download data artifacts
+        data_path = mlflow.artifacts.download_artifacts(artifact_path="data_splits", run_id=data_run.info.run_id)
+        train_df = pd.read_csv(os.path.join(data_path, 'train.csv'))
+        val_df = pd.read_csv(os.path.join(data_path, 'val.csv'))
+        print(f"Loaded data from MLflow artifacts")
+    else:
+        raise FileNotFoundError("No runs with data_splits artifacts found in any experiment")
+        
+except Exception as e:
+    print(f"Failed to load data from MLflow: {e}")
+    print("Falling back to local data files")
+    # Fallback to local files
+    train_df = pd.read_csv('data/processed/train.csv')
+    val_df = pd.read_csv('data/processed/val.csv')
 
 print("Train:", train_df.shape, "Val:", val_df.shape)
 

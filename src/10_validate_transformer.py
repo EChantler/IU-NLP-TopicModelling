@@ -5,11 +5,45 @@ import torch
 from datasets import Dataset
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
-# Load model and tokenizer
-model_path = './results/final_transformer_model'
-tokenizer = AutoTokenizer.from_pretrained(model_path)
-model = AutoModelForSequenceClassification.from_pretrained(model_path)
-model.eval()
+# MLflow imports
+import mlflow
+import mlflow.pytorch
+from mlflow.tracking import MlflowClient
+
+# Load transformer model from MLflow Model Registry
+# Use the latest version (fallback if no Production stage)
+client = MlflowClient()
+try:
+    # Try to get Production version first
+    versions = client.get_latest_versions("transformer_model_prod")
+    if versions:
+        model_version = versions[0].version
+        model_uri = f"models:/transformer_model/{model_version}"
+    else:
+        raise RuntimeError("No versions found for 'transformer_model'")
+    
+    # Load model using MLflow's pytorch loader
+    model = mlflow.pytorch.load_model(model_uri)
+    model.eval()
+    
+    # For tokenizer, we need to download artifacts manually
+    version_info = client.get_model_version("transformer_model", model_version)
+    if version_info.run_id:
+        local_model_path = mlflow.artifacts.download_artifacts(artifact_path="transformer_model", run_id=version_info.run_id)
+        tokenizer = AutoTokenizer.from_pretrained(local_model_path)
+    else:
+        # Fallback: use the base model tokenizer
+        tokenizer = AutoTokenizer.from_pretrained('distilbert-base-uncased')
+        print("Warning: Using fallback tokenizer as model version has no run_id")
+        
+except Exception as e:
+    print(f"Failed to load from registry: {e}")
+    # Ultimate fallback: load from local path
+    print("Falling back to local model path")
+    model_path = './results/final_transformer_model'
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    model = AutoModelForSequenceClassification.from_pretrained(model_path)
+    model.eval()
 
 # Detect device and move model to GPU if available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
