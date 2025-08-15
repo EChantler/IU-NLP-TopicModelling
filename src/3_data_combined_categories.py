@@ -128,7 +128,139 @@ for domain, labels in targets.items():
 # supr-con
 
 # Unique targets for social:
-# LanguageTechnology
-# Python
-# investing
-# pytorch
+# ADOPTION
+# ADVICE
+# AI
+# AMA
+# ANALYSIS
+# ANECDOTAL
+# Academic
+# Analysis
+# Animal Science
+# Anthropology
+# Archaeology
+# Article
+# Astronomy
+# Auto
+# Biology
+# Budgeting
+# COMEDY
+# COVID-19
+# Cancer
+# Career Discussion
+# Career | Europe
+# Career | US
+# Challenges
+# Chemistry
+# Coding
+# Computer Science
+# Computing
+# Credit
+# DE
+# DEBATE
+# DISCUSSION
+# Debt
+# Discussion
+# Discusssion
+# EXCHANGES
+# Earth Sciences
+# Economics
+# Education
+# Employment
+# Engineering
+# Environment
+# Epidemiology
+# Ethics/Privacy
+# Finance
+# GENERAL-NEWS
+# Gaming
+# Genetics
+# Geology
+# Gym Story Saturday
+# Health
+# Housing
+# Human Body
+# Image
+# Images
+# Insurance
+# Investing
+# Itinerary
+# LEGACY
+# Linguistics
+# MARKETS
+# MEME
+# METRICS
+# MISLEADING
+# ML
+# Materials Science
+# Mathematics
+# Media
+# Medicine
+# Megathread
+# Meta
+# Mod Post
+# Monday Meme
+# Moronic Monday
+# MoviesTV
+# My Advice
+# NEW UPDATE - See Pinned Comment.
+# NFTs
+# Nanoscience
+# Neuroscience
+# News
+# Official Discussion
+# Other
+# PERSPECTIVE
+# POLITICS
+# PRIVACY
+# PROJECT-UPDATE
+# Paleontology
+# Physics
+# Physique Phriday
+# Planetary Sci.
+# Planning
+# Poster
+# Project
+# Projects
+# Psychology
+# Question
+# REGULATIONS
+# REMINDER
+# Recommendation
+# Research
+# Retirement
+# Review
+# SCALABILITY
+# SPECULATION
+# STRATEGY
+# Saving
+# Science
+# Simple Questions
+# Social Science
+# Spoilers
+# Statistics
+# TECHNOLOGY
+# Taxes
+# Tech
+# Third Party Horror Story
+# Tools
+# Trailer
+# Travel
+# VIDEOS
+# Victory Sunday
+# Video
+# WARNING
+# [Locked]
+# [Misleading - Only some backers]
+# eXch Competition - 0.5 BTC Prize!
+# ⛏️ MINING
+# ⛏️ See Top Comment.
+# 🔴 UNRELIABLE SOURCE
+# 🟢 ANALYSIS
+# 🟢 DISCUSSION
+# 🟢 GENERAL-NEWS
+# 🟢 MARKETS
+# 🟢 METRICS
+# 🟢 POLITICS
+# 🟢 SPECULATION
+# 🟢 ⛏️ MINING

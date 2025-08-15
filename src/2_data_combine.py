@@ -26,9 +26,9 @@ if not all_dfs:
 # Find the minimum sample size for equal representation
 min_size = min(len(df) for df in all_dfs)
 
-# For each domain, take twice the min_size or the full set if smaller
+# For each domain, take the min_size or the full set if smaller
 sampled_dfs = [
-    df.sample(n=2*min_size, random_state=42) if len(df) >= 2*min_size else df.copy()
+    df.sample(n=min_size, random_state=42) if len(df) >= min_size else df.copy()
     for df in all_dfs
 ]
 

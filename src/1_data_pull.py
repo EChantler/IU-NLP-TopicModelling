@@ -70,11 +70,18 @@ def load_arxiv_classification():
 
 
 def load_reddit_topics():
-    from datasets import load_dataset
-
-    ds = load_dataset("jamescalam/reddit-topics")
-    data = ds["train"]["selftext"]
-    target = ds["train"]["sub"]
+    import json
+    
+    data = []
+    target = []
+    
+    # Read the local JSONL file
+    with open("./data/raw/reddit_labeled.jsonl", "r", encoding="utf-8") as f:
+        for line in f:
+            item = json.loads(line.strip())
+            data.append(item["text"])
+            target.append(item["label"])
+    
     return data, target
 
 
